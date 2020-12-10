@@ -35,32 +35,8 @@ class Game {
 
     change_player_turn() {
         this.players.forEach(x => {
-                x.myTurn = x.myTurn ? false : true;
-            })
-            // p.myTurn = p.myTurn ? false : true;
-    }
-    draw(number) {
-        if (this.stack == 0) {
-            this.endGame();
-        }
-        for (let player of this.players) {
-            if (player.myTurn == true) {
-                this.stack -= number;
-                this.throw();
-                // console.log('player ' + player.name + ' ' + player.myTurn + ' ' + -number)
-                if (this.stack == 0 || this.stack == 1) {
-                    // console.log('you win ' + player.name + ' ' + player.myTurn)
-                    let test = this.players.find(x => x.myTurn == false);
-                    return test;
-                }
-            } else {
-                // player.myTurn = true;
-                // this.change_player_turn(player)
-                // document.getElementById("player1ID").classList.add("active");
-            }
-            this.change_player_turn(player);
-        }
-        this.player_is_active()
+            x.myTurn = x.myTurn ? false : true;
+        })
     }
     draw_sticks(number) {
         if (this.stack == 0) {
@@ -88,10 +64,10 @@ class Game {
     }
     startGame() {
 
-        // let player1 = 'Player 1'; // Test Data
-        // let player2 = 'Player 2'; // Test Data
-        let player1 = prompt("Name of player one?");
-        let player2 = prompt("Name of player two?");
+        let player1 = 'Player 1'; // Test Data
+        let player2 = 'Player 2'; // Test Data
+        // let player1 = prompt("Name of player one?");
+        // let player2 = prompt("Name of player two?");
         this.addPlayer(player1);
         this.addPlayer(player2);
 
@@ -131,10 +107,6 @@ class Game {
         console.log('The end')
     }
 };
-
-
-let max_draw = 3;
-let count = 21;
 
 
 document.addEventListener("DOMContentLoaded", function(e) {
