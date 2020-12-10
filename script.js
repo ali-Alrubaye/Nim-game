@@ -141,8 +141,13 @@ document.addEventListener("DOMContentLoaded", function(e) {
 
     let game1 = new Game();
     game1.startGame();
-
-    let start_over_game = document.getElementById('btn_over');
+    /**
+     * // Todo list.
+     * 
+     * start over game
+     * highscore
+     */
+    let start_over_game = document.getElementById('btn_over'); // Todo 
     start_over_game.addEventListener('click', () => {
         // if (game1.stack == 21) {
         //     location.reload();
