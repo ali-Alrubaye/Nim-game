@@ -24,4 +24,4 @@
 * Skapa en tabell som innehåller de tio bästa spelarna sett till hur många poäng de någonsin har tagit.
 
 
-![Image of Yaktocat](https://github.com/ali-Alrubaye/nim_game/tree/master/images/nim.png)
+![Image of Yaktocat](https://github.com/ali-Alrubaye/nim_game/blob/master/images/nim.png)
