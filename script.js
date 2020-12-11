@@ -1,7 +1,8 @@
 class Player {
     constructor(name, myTurn) {
         this.name = name;
-        this.mySticks = 0
+        this.mySticks = 0;
+        this.score = 0;
         this.myTurn = myTurn;
     };
 };
@@ -26,6 +27,9 @@ class Game {
             const element = this.players[i];
             player_sticks[i].innerHTML = `Stick: ${element.mySticks}`;
         }
+    }
+    get_player() {
+        return this.players;
     }
     addPlayer(playername) {
         let newPlayer = new Player(playername, false);
@@ -62,8 +66,20 @@ class Game {
         this.change_player_turn(); // ätt andra spelare till true & nuvarande spelare till false
         this.player_is_active(); // Det ska placera efter change_player_turn
     }
-    startGame() {
+    start_over() {
+        // to reset game => start over game
 
+        this.stack = 21;
+        let player_reset = document.querySelectorAll('.player_sticks');
+        for (let i = 0; i < this.players.length; i++) {
+            const element = this.players[i];
+            element.mySticks = 0
+            player_reset[i].innerHTML = '';
+        }
+        this.player_is_active();
+        this.throw();
+    }
+    startGame() {
         let player1 = 'Player 1'; // Test Data
         let player2 = 'Player 2'; // Test Data
         // let player1 = prompt("Name of player one?");
@@ -77,8 +93,10 @@ class Game {
         let player_two = document.getElementById("name_two");
         player_two.innerHTML = player2;
         player_two.parentElement.dataset.name = player2;
+
         this.player_is_active();
         this.throw();
+
     }
     player_is_active() {
         let player_active = document.querySelectorAll('.player');
@@ -93,39 +111,25 @@ class Game {
         if (this.stack <= 0) {
             this.players.forEach(p => {
                 if (p.myTurn) {
+                    p.score = p.score + 2;
                     alert(`You  winner ${p.name}`)
                 }
             })
         }
-        let play_again = confirm('Do you want play again?');
+        let play_again = confirm('Do you want play again?'); // fråga om vinnare vill har spela igen 
         if (play_again) {
-            this.startGame();
-            console.log(play_again)
+            this.start_over(); // Starta spelet med samma namn
         } else {
-            console.log(play_again)
+            console.log('End Game')
         }
-        console.log('The end')
     }
 };
 
+let game1 = new Game();
 
 document.addEventListener("DOMContentLoaded", function(e) {
 
-    let game1 = new Game();
     game1.startGame();
-    /**
-     * // Todo list.
-     * 
-     * start over game
-     * highscore
-     */
-    let start_over_game = document.getElementById('btn_over'); // Todo 
-    start_over_game.addEventListener('click', () => {
-        // if (game1.stack == 21) {
-        //     location.reload();
-        // }
-        game1.startGame();
-    })
 
     let btn1 = document.getElementById('btn1');
     let btn2 = document.getElementById('btn2');
@@ -134,4 +138,28 @@ document.addEventListener("DOMContentLoaded", function(e) {
     btn1.addEventListener('click', () => { game1.draw_sticks(1) })
     btn2.addEventListener('click', () => { game1.draw_sticks(2) })
     btn3.addEventListener('click', () => { game1.draw_sticks(3) })
+
+    let start_over_game = document.getElementById('btn_over'); // Todo 
+    start_over_game.addEventListener('click', () => {
+        game1.start_over();
+    });
+
+    let hig_btn = document.getElementById('hig_btn');
+    hig_btn.addEventListener('click', showHighscore);
+
+    let high = document.getElementById("highscoreID");
+
+    function showHighscore() {
+        high.classList.toggle('highscoreHid')
+        let player_one_score = document.getElementById("player1score");
+        player_one_score.innerHTML = ''
+        game1.get_player().forEach(player => {
+            if (player.score > 0) {
+                let span = document.createElement('span');
+                let text = document.createTextNode(`${player.name}'s score is ${player.score}`);
+                span.appendChild(text)
+                player_one_score.appendChild(span);
+            }
+        })
+    }
 });
