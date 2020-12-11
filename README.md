@@ -23,4 +23,5 @@
 * Vid vinst i en match får spelaren två poäng.
 * Skapa en tabell som innehåller de tio bästa spelarna sett till hur många poäng de någonsin har tagit.
 
+
 ![Image of Yaktocat](https://github.com/ali-Alrubaye/nim_game/tree/master/images/nim.png)
