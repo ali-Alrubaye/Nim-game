@@ -68,7 +68,6 @@ class Game {
     }
     start_over() {
         // to reset game => start over game
-
         this.stack = 21;
         let player_reset = document.querySelectorAll('.player_sticks');
         for (let i = 0; i < this.players.length; i++) {
@@ -80,22 +79,35 @@ class Game {
         this.throw();
     }
     startGame() {
-        let player1 = 'Player 1'; // Test Data
-        let player2 = 'Player 2'; // Test Data
+        // let player1 = 'Player 1'; // Test Data
+        // let player2 = 'Player 2'; // Test Data
         // let player1 = prompt("Name of player one?");
         // let player2 = prompt("Name of player two?");
-        this.addPlayer(player1);
-        this.addPlayer(player2);
+        swal("Name of player one?", {
+                content: "input",
+            })
+            .then((player1) => {
+                let p1 = player1 == '' ? 'Player 1' : player1
+                this.addPlayer(p1);
+                let player_one = document.getElementById("name_one");
+                player_one.innerHTML = p1;
+                player_one.parentElement.dataset.name = p1;
+            }).then(() => {
+                swal("Name of player two?", {
+                    content: "input",
+                }).then((player2) => {
+                    let p2 = player2 == '' ? 'Player 2' : player2
+                    this.addPlayer(p2);
+                    let player_two = document.getElementById("name_two");
+                    player_two.innerHTML = p2;
+                    player_two.parentElement.dataset.name = p2;
+                }).then(() => {
+                    this.player_is_active();
+                    this.throw();
+                })
+            });
 
-        let player_one = document.getElementById("name_one");
-        player_one.innerHTML = player1;
-        player_one.parentElement.dataset.name = player1;
-        let player_two = document.getElementById("name_two");
-        player_two.innerHTML = player2;
-        player_two.parentElement.dataset.name = player2;
 
-        this.player_is_active();
-        this.throw();
 
     }
     player_is_active() {
@@ -112,16 +124,27 @@ class Game {
             this.players.forEach(p => {
                 if (p.myTurn) {
                     p.score = p.score + 2;
-                    alert(`You  winner ${p.name}`)
+                    let win = `You  winner ${p.name}`;
+                    swal(win)
+                        .then((value) => {
+                            if (value) {
+                                swal('Do you want play again?')
+                                    .then((value) => {
+                                        if (value) {
+                                            this.start_over(); // Starta spelet med samma namn
+                                        }
+                                    });
+                            }
+                        });
                 }
-            })
+            });
         }
-        let play_again = confirm('Do you want play again?'); // fråga om vinnare vill har spela igen 
-        if (play_again) {
-            this.start_over(); // Starta spelet med samma namn
-        } else {
-            console.log('End Game')
-        }
+        // let play_again = confirm('Do you want play again?'); // fråga om vinnare vill har spela igen 
+        // if (play_again) {
+        //     this.start_over(); // Starta spelet med samma namn
+        // } else {
+        //     console.log('End Game')
+        // }
     }
 };
 
@@ -153,10 +176,10 @@ document.addEventListener("DOMContentLoaded", function(e) {
         high.classList.toggle('highscoreHid')
         let player_one_score = document.getElementById("player1score");
         player_one_score.innerHTML = ''
-        game1.get_player().forEach(player => {
+        game1.get_player().forEach((player, index) => {
             if (player.score > 0) {
                 let span = document.createElement('span');
-                let text = document.createTextNode(`${player.name}'s score is ${player.score}`);
+                let text = document.createTextNode(`- ${player.name}'s score is ${player.score}`);
                 span.appendChild(text)
                 player_one_score.appendChild(span);
             }
