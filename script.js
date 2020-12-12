@@ -40,6 +40,11 @@ class Game {
     change_player_turn() {
         this.players.forEach(x => {
             x.myTurn = x.myTurn ? false : true;
+            if (x.name === 'Computer' && x.myTurn === true) {
+                if (this.stack > 0) {
+                    this.computeMove()
+                }
+            }
         })
     }
     computeMove() {
@@ -47,19 +52,20 @@ class Game {
         let stack = this.stack;
         for (let i = 3; i > 0; i--) {
             let test = stack - i;
-            if (test % 2 === 1 && stack > 0) {
+            if (test % 2 === 1 && stack > 1) {
                 move_stick = i;
                 setTimeout(() => {
                     this.draw_sticks(move_stick)
-                }, 1000);
+                }, 600);
                 break;
             } else if (stack == 1) {
                 this.draw_sticks(i)
+                break;
             }
         }
-        console.log('move_stick', move_stick)
-        console.log('sticks', stack)
-        console.log('Stack - move_stick ', stack - move_stick);
+        // console.log('move_stick', move_stick)
+        // console.log('sticks', stack)
+        // console.log('Stack - move_stick ', stack - move_stick);
 
     }
     draw_sticks(number) {
@@ -144,7 +150,7 @@ class Game {
             .then((value) => {
                 switch (value) {
                     case "two":
-                        this.start_twoPlayers()
+                        this.start_twoPlayers();
                         break;
                     case "Computer":
                         swal("Name of player one?", {
@@ -164,7 +170,6 @@ class Game {
                                 player_two.innerHTML = p2;
                                 player_two.parentElement.dataset.name = p2;
 
-                            }).then(() => {
                                 this.player_is_active();
                                 this.throw();
                             });
@@ -184,20 +189,14 @@ class Game {
             if (this.players[index].myTurn == true) {
                 x.classList.add('active');
             }
-            if (this.players[index].name == 'Computer' && this.players[index].myTurn == true) {
-                if (this.stack > 0) {
-                    this.computeMove()
-                }
-            }
         })
     }
     endGame() {
         if (this.stack <= 0) {
             this.players.forEach(p => {
-                if (p.myTurn) {
+                if (p.myTurn == true) {
                     p.score = p.score + 2;
-                    let win = `You  winner ${p.name}`;
-                    swal(win)
+                    swal(`You  winner ${p.name}`)
                         .then((value) => {
                             if (value) {
                                 swal('Do you want play again?')
