@@ -42,6 +42,26 @@ class Game {
             x.myTurn = x.myTurn ? false : true;
         })
     }
+    computeMove() {
+        let move_stick = 0;
+        let stack = this.stack;
+        for (let i = 3; i > 0; i--) {
+            let test = stack - i;
+            if (test % 2 === 1 && stack > 0) {
+                move_stick = i;
+                setTimeout(() => {
+                    this.draw_sticks(move_stick)
+                }, 1000);
+                break;
+            } else if (stack == 1) {
+                this.draw_sticks(i)
+            }
+        }
+        console.log('move_stick', move_stick)
+        console.log('sticks', stack)
+        console.log('Stack - move_stick ', stack - move_stick);
+
+    }
     draw_sticks(number) {
         if (this.stack == 0) {
             this.endGame();
@@ -78,7 +98,7 @@ class Game {
         this.player_is_active();
         this.throw();
     }
-    startGame() {
+    start_twoPlayers() {
         // let player1 = 'Player 1'; // Test Data
         // let player2 = 'Player 2'; // Test Data
         // let player1 = prompt("Name of player one?");
@@ -106,9 +126,56 @@ class Game {
                     this.throw();
                 })
             });
+    }
+    startGame() {
+        swal("Select Game Mode:", {
+                buttons: {
+                    cancel: "Cancel",
+                    catch: {
+                        text: "vs. Computer",
+                        value: "Computer",
+                    },
+                    defeat: {
+                        text: "Two Players",
+                        value: "two",
+                    },
+                },
+            })
+            .then((value) => {
+                switch (value) {
+                    case "two":
+                        this.start_twoPlayers()
+                        break;
+                    case "Computer":
+                        swal("Name of player one?", {
+                                content: "input",
+                            })
+                            .then((player1) => {
+                                let p1 = player1 == '' ? 'Player 1' : player1
+                                this.addPlayer(p1);
+                                let player_one = document.getElementById("name_one");
+                                player_one.innerHTML = p1;
+                                player_one.parentElement.dataset.name = p1;
+                            }).then(() => {
 
+                                let p2 = 'Computer';
+                                this.addPlayer(p2);
+                                let player_two = document.getElementById("name_two");
+                                player_two.innerHTML = p2;
+                                player_two.parentElement.dataset.name = p2;
 
-
+                            }).then(() => {
+                                this.player_is_active();
+                                this.throw();
+                            });
+                        break;
+                    default:
+                        swal("Godbey ", {
+                            buttons: false,
+                            timer: 1000,
+                        });
+                }
+            });
     }
     player_is_active() {
         let player_active = document.querySelectorAll('.player');
@@ -116,6 +183,11 @@ class Game {
             x.classList.remove('active');
             if (this.players[index].myTurn == true) {
                 x.classList.add('active');
+            }
+            if (this.players[index].name == 'Computer' && this.players[index].myTurn == true) {
+                if (this.stack > 0) {
+                    this.computeMove()
+                }
             }
         })
     }
@@ -162,7 +234,7 @@ document.addEventListener("DOMContentLoaded", function(e) {
     btn2.addEventListener('click', () => { game1.draw_sticks(2) })
     btn3.addEventListener('click', () => { game1.draw_sticks(3) })
 
-    let start_over_game = document.getElementById('btn_over'); // Todo 
+    let start_over_game = document.getElementById('btn_over');
     start_over_game.addEventListener('click', () => {
         game1.start_over();
     });
@@ -185,4 +257,35 @@ document.addEventListener("DOMContentLoaded", function(e) {
             }
         })
     }
+
+    function misereNimBool() {
+        let xorsum = 0;
+        let stack = game1.stack;
+        stack -= 4;
+        for (let i = 0; i < stack; i++) {
+            xorsum ^= i;
+        }
+        if (xorsum !== 0) {
+            console.log('First Win')
+            for (let i = 0; i < stack; i++) {
+                if (i > (i ^ xorsum)) {
+                    console.log(`First Move ${(i - (i ^ xorsum))} stones from ${i}`);
+                    break;
+                }
+            }
+        } else {
+            console.log('Second win')
+        }
+    }
+    // misereNimBool()
+
+
 });
+
+/**
+ * if current Xor != 0 => I can win.
+ * So if you are in a game state, make the move that makes the next state XOR = 0.
+ * Hence user in losing state.
+ * whatever he did, he will return me to xor != 0.
+ * Again and again till all piles = 0.
+ */
