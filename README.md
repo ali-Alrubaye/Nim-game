@@ -1,4 +1,4 @@
-# nim_game
+# Nim game
 
 * Nim är ett spel som finns i olika versioner med olika regler.
 * I vår version ska vi ha två spelare och en hög med 21 stickor.
