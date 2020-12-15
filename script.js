@@ -40,7 +40,33 @@ class Game {
     change_player_turn() {
         this.players.forEach(x => {
             x.myTurn = x.myTurn ? false : true;
+            if (x.name === 'Computer' && x.myTurn === true) {
+                if (this.stack > 0) {
+                    this.computeMove()
+                }
+            }
         })
+    }
+    computeMove() {
+        let move_stick = 0;
+        let stack = this.stack;
+        for (let i = 3; i > 0; i--) {
+            let test = stack - i;
+            if (test % 2 === 1 && stack > 1) {
+                move_stick = i;
+                setTimeout(() => {
+                    this.draw_sticks(move_stick)
+                }, 600);
+                break;
+            } else if (stack == 1) {
+                this.draw_sticks(i)
+                break;
+            }
+        }
+        // console.log('move_stick', move_stick)
+        // console.log('sticks', stack)
+        // console.log('Stack - move_stick ', stack - move_stick);
+
     }
     draw_sticks(number) {
         if (this.stack == 0) {
@@ -68,7 +94,6 @@ class Game {
     }
     start_over() {
         // to reset game => start over game
-
         this.stack = 21;
         let player_reset = document.querySelectorAll('.player_sticks');
         for (let i = 0; i < this.players.length; i++) {
@@ -79,24 +104,83 @@ class Game {
         this.player_is_active();
         this.throw();
     }
-    startGame() {
-        let player1 = 'Player 1'; // Test Data
-        let player2 = 'Player 2'; // Test Data
+    start_twoPlayers() {
+        // let player1 = 'Player 1'; // Test Data
+        // let player2 = 'Player 2'; // Test Data
         // let player1 = prompt("Name of player one?");
         // let player2 = prompt("Name of player two?");
-        this.addPlayer(player1);
-        this.addPlayer(player2);
+        swal("Name of player one?", {
+                content: "input",
+            })
+            .then((player1) => {
+                let p1 = player1 == '' ? 'Player 1' : player1
+                this.addPlayer(p1);
+                let player_one = document.getElementById("name_one");
+                player_one.innerHTML = p1;
+                player_one.parentElement.dataset.name = p1;
+            }).then(() => {
+                swal("Name of player two?", {
+                    content: "input",
+                }).then((player2) => {
+                    let p2 = player2 == '' ? 'Player 2' : player2
+                    this.addPlayer(p2);
+                    let player_two = document.getElementById("name_two");
+                    player_two.innerHTML = p2;
+                    player_two.parentElement.dataset.name = p2;
+                }).then(() => {
+                    this.player_is_active();
+                    this.throw();
+                })
+            });
+    }
+    startGame() {
+        swal("Select Game Mode:", {
+                buttons: {
+                    cancel: "Cancel",
+                    catch: {
+                        text: "vs. Computer",
+                        value: "Computer",
+                    },
+                    defeat: {
+                        text: "Two Players",
+                        value: "two",
+                    },
+                },
+            })
+            .then((value) => {
+                switch (value) {
+                    case "two":
+                        this.start_twoPlayers();
+                        break;
+                    case "Computer":
+                        swal("Name of player one?", {
+                                content: "input",
+                            })
+                            .then((player1) => {
+                                let p1 = player1 == '' ? 'Player 1' : player1
+                                this.addPlayer(p1);
+                                let player_one = document.getElementById("name_one");
+                                player_one.innerHTML = p1;
+                                player_one.parentElement.dataset.name = p1;
+                            }).then(() => {
 
-        let player_one = document.getElementById("name_one");
-        player_one.innerHTML = player1;
-        player_one.parentElement.dataset.name = player1;
-        let player_two = document.getElementById("name_two");
-        player_two.innerHTML = player2;
-        player_two.parentElement.dataset.name = player2;
+                                let p2 = 'Computer';
+                                this.addPlayer(p2);
+                                let player_two = document.getElementById("name_two");
+                                player_two.innerHTML = p2;
+                                player_two.parentElement.dataset.name = p2;
 
-        this.player_is_active();
-        this.throw();
-
+                                this.player_is_active();
+                                this.throw();
+                            });
+                        break;
+                    default:
+                        swal("Godbey ", {
+                            buttons: false,
+                            timer: 1000,
+                        });
+                }
+            });
     }
     player_is_active() {
         let player_active = document.querySelectorAll('.player');
@@ -110,18 +194,28 @@ class Game {
     endGame() {
         if (this.stack <= 0) {
             this.players.forEach(p => {
-                if (p.myTurn) {
+                if (p.myTurn == true) {
                     p.score = p.score + 2;
-                    alert(`You  winner ${p.name}`)
+                    swal(`You  winner ${p.name}`)
+                        .then((value) => {
+                            if (value) {
+                                swal('Do you want play again?')
+                                    .then((value) => {
+                                        if (value) {
+                                            this.start_over(); // Starta spelet med samma namn
+                                        }
+                                    });
+                            }
+                        });
                 }
-            })
+            });
         }
-        let play_again = confirm('Do you want play again?'); // fråga om vinnare vill har spela igen 
-        if (play_again) {
-            this.start_over(); // Starta spelet med samma namn
-        } else {
-            console.log('End Game')
-        }
+        // let play_again = confirm('Do you want play again?'); // fråga om vinnare vill har spela igen 
+        // if (play_again) {
+        //     this.start_over(); // Starta spelet med samma namn
+        // } else {
+        //     console.log('End Game')
+        // }
     }
 };
 
@@ -139,7 +233,7 @@ document.addEventListener("DOMContentLoaded", function(e) {
     btn2.addEventListener('click', () => { game1.draw_sticks(2) })
     btn3.addEventListener('click', () => { game1.draw_sticks(3) })
 
-    let start_over_game = document.getElementById('btn_over'); // Todo 
+    let start_over_game = document.getElementById('btn_over');
     start_over_game.addEventListener('click', () => {
         game1.start_over();
     });
@@ -153,13 +247,44 @@ document.addEventListener("DOMContentLoaded", function(e) {
         high.classList.toggle('highscoreHid')
         let player_one_score = document.getElementById("player1score");
         player_one_score.innerHTML = ''
-        game1.get_player().forEach(player => {
+        game1.get_player().forEach((player, index) => {
             if (player.score > 0) {
                 let span = document.createElement('span');
-                let text = document.createTextNode(`${player.name}'s score is ${player.score}`);
+                let text = document.createTextNode(`- ${player.name}'s score is ${player.score}`);
                 span.appendChild(text)
                 player_one_score.appendChild(span);
             }
         })
     }
+
+    function misereNimBool() {
+        let xorsum = 0;
+        let stack = game1.stack;
+        stack -= 4;
+        for (let i = 0; i < stack; i++) {
+            xorsum ^= i;
+        }
+        if (xorsum !== 0) {
+            console.log('First Win')
+            for (let i = 0; i < stack; i++) {
+                if (i > (i ^ xorsum)) {
+                    console.log(`First Move ${(i - (i ^ xorsum))} stones from ${i}`);
+                    break;
+                }
+            }
+        } else {
+            console.log('Second win')
+        }
+    }
+    // misereNimBool()
+
+
 });
+
+/**
+ * if current Xor != 0 => I can win.
+ * So if you are in a game state, make the move that makes the next state XOR = 0.
+ * Hence user in losing state.
+ * whatever he did, he will return me to xor != 0.
+ * Again and again till all piles = 0.
+ */
